@@ -6,7 +6,31 @@ module.exports = {
   },
   onDidParseMarkdown: function(html, {cheerio}) {
     return new Promise((resolve, reject)=> {
-      html=html+"<br /><br />";
+      html=`<script src="https://kit.fontawesome.com/849ddf9236.js" crossorigin="anonymous"></script>
+      <script src="Hyper_md/jquery-3.4.1.min.js"></script>
+<link rel="stylesheet" href="Hyper_md/md.css">`
+      +html+`<br /><br />
+<script  type="text/javascript" src="Hyper_md/md.js"></script>
+<script> 
+var Main_LeftListLiSelector = $(".md-sidebar-toc li");
+
+$(Main_LeftListLiSelector).on('click', function() {
+  $(Main_LeftListLiSelector).removeClass('active');
+  $(this).addClass('active');
+});
+</script>`;
+/*      html=html+`<script>
+var mdPreview = document.getElementsByClassName('mume');
+for (var i = 0; i < mdPreview.length; i++) {
+  mdPreview[i].addEventListener('click', function(event) {
+    event.stopPropagation();
+    if (document.body.hasAttribute('html-show-sidebar-toc')){
+      document.body.removeAttribute('html-show-sidebar-toc');
+    }
+  })
+}
+</script>`*/
+
       return resolve(html)
     })
   },
@@ -14,6 +38,22 @@ module.exports = {
         return new Promise((resolve, reject) => {
       //change fig size
       markdown = markdown+"\n";
+      //雙欄
+      markdown = markdown.replace(
+        /:::\s*left\s*\n([\w\W]*?):::\s*right\s*\n([\w\W]*?):::/g,
+        (all,l,r)=> {
+            return `<div class="dcl">
+<section>
+
+${l}
+</section>
+
+<section>
+
+${r}
+</section></div>\n`
+        }
+      );
       markdown = markdown.replace(
         /!\[([^\]]*)\]\(([^\)]+)\s+=(\d*)\s*\)/g,
         (all,title,src,width,height)=> {
@@ -21,8 +61,9 @@ module.exports = {
         }
       );
       //collapse 
+      
       markdown = markdown.replace(
-        /:::\s*spoiler\s*(\{.+\})?\s*([\w\W]*?)\s*:::\n/g,
+        /:::\s*spoiler\s*(\{.+\})?\s*([\w\W]*?)\s*:::/g,
         (whole, s1, c1) =>`\<details\>
 ${(s1)?"\<summary\>"+s1.replaceAll("\{","").replaceAll("\}","")+"\<\/summary\>\n":""}
 ${c1}\n\n\<\/details\>\n\n`
@@ -62,22 +103,7 @@ style="width:100%;height:124px" frameborder="no">
 </iframe>\n`
         }
       );
-      //雙欄
-      markdown = markdown.replace(
-        /@left\s*\n([\w\W]*?)\n\n@right\s*\n([\w\W]*?)\n\n/g,
-        (all,l,r)=> {
-            return `<div class="dcl">
-<section>
-
-${l}
-</section>
-
-<section>
-
-${r}
-</section></div>\n`
-        }
-      );
+      
       
           return resolve(markdown);
         });
