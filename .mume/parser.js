@@ -72,8 +72,8 @@ ${c1}\n\n\<\/details\>\n\n`
       markdown = markdown.replace(
         /:::(\w+)\s*(\{.+\})?\s*([\w\W]*?):::/g,
         (whole, t1,t2,c1) => `
-!!!${(t1)?t1:""}  ${(t2)?t2.replaceAll("\{","").replaceAll("\}",""):""}
-\t${c1.replaceAll("\n","\n\t")}\n`,
+!!! ${(t1)?t1+' ':""}${(t2)?t2.replaceAll("\{","").replaceAll("\}",""):""}
+    ${c1.replaceAll("\n","\n    ")}\n`,
       );
       //easy tikz 
       markdown = markdown.replace(
